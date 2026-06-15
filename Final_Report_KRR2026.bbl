@@ -1,0 +1,24 @@
+\begin{thebibliography}{1}
+
+\bibitem{demaine2007}
+Erik~D. Demaine and Martin~L. Demaine.
+\newblock Jigsaw puzzles, edge matching, and polyomino packing: Connections and
+  complexity.
+\newblock {\em Graphs and Combinatorics}, 23(S1):195--208, 2007.
+\newblock \href {https://doi.org/10.1007/s00373-007-0713-4}
+  {\path{doi:10.1007/s00373-007-0713-4}}.
+
+\bibitem{gareyjohnson1979}
+Michael~R. Garey and David~S. Johnson.
+\newblock {\em Computers and Intractability: A Guide to the Theory of
+  {NP}-Completeness}.
+\newblock W. H. Freeman, 1979.
+
+\bibitem{moore2001}
+Cristopher Moore and John~Michael Robson.
+\newblock Hard tiling problems with simple tiles.
+\newblock {\em Discrete \& Computational Geometry}, 26(4):573--590, 2001.
+\newblock \href {https://doi.org/10.1007/s00454-001-0047-6}
+  {\path{doi:10.1007/s00454-001-0047-6}}.
+
+\end{thebibliography}
