@@ -627,33 +627,53 @@ the number of ground placement atoms the solver must reason over).  We stress
 that this is \emph{not} a bound on running time --- much as the $N!$ permutations
 of a list do not imply that sorting takes factorial time.  It only indicates how
 large the unpruned space is, motivating why structure and propagation matter.
-A rough upper bound on placement choices is:
+A rough upper bound on the number of joint placements is:
 \[
   \text{Search space} \;\lesssim\;
-  \underbrace{(32N \times 86)^{8N}}_{\text{position} \times \text{rotation for each piece}}
+  \underbrace{\bigl(32N \times 24\bigr)^{8N}}_{\text{(positions} \times \text{orientations) per piece, over all } 8N \text{ pieces}}
   \;\div\;
-  \underbrace{(N!)^8}_{\text{interchangeable copies}}
+  \underbrace{(N!)^{8}}_{\text{interchangeable copies}}
 \]
 
-The denominator accounts for symmetry between the $N$ copies of each type.
-In practice, Clingo's unit propagation eliminates the vast majority of this
-space: placing one piece immediately constrains where others can go, often
-reducing the effective branching factor to near 1 per decision.
+The factors are read as follows.  Each of the $8N$ pieces is placed by choosing
+an anchor cell (at most $32N$ choices, the cell count) and an orientation.  A
+single piece has at most $24$ orientations --- the maximum over the eight types,
+attained by the fully asymmetric L (Table~\ref{tab:pieces}); the other types
+have fewer ($3$ to $12$).  Hence each piece has at most $32N \times 24$
+placements, and an independent choice for all $8N$ pieces gives the
+$(32N \times 24)^{8N}$ numerator.  Note that the constant $86$ used elsewhere is
+the \emph{sum} of orientations over the eight \emph{types}
+($3\!+\!12\!+\!24\!+\!8\!+\!3\!+\!12\!+\!12\!+\!12$), not the number of
+orientations of any one piece, so $24$ --- not $86$ --- is the correct per-piece
+factor here.  The denominator $(N!)^{8}$ divides out the symmetry among the $N$
+interchangeable copies of each of the $8$ types.
+
+This is only an upper bound on the unpruned space.  In practice Clingo's unit
+propagation eliminates the vast majority of it: placing one piece immediately
+constrains where the others can go, often reducing the effective branching
+factor to near $1$ per decision.
+
+The quantity the grounder actually materialises is much smaller.  The choice
+rule generates one ground \texttt{position/5} atom per (piece, orientation,
+anchor) triple, i.e.\ $\sum_{\text{pieces}} (32N \times r_{\text{type}})$.
+Summed over the $N$ copies of all eight types this is exactly
+$32N \times 86 \times N = 2752\,N^{2}$ atoms (verified by grounding with Clingo):
 
 \begin{table}[htbp]
 \centering
-\caption{ASP grounding size (approximate) as a function of $N$.}
+\caption{Exact ASP grounding size as a function of $N$: number of ground
+         \texttt{position/5} atoms, $2752\,N^{2}$ (confirmed by grounding).}
 \label{tab:ground}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}rrrrrr@{}}
+\begin{tabular}{@{}rrrr@{}}
   \toprule
-  $N$ & Cells & Pieces & Rotations & Anchor choices & Position atoms\\
+  $N$ & Cells ($32N$) & Pieces ($8N$) & Ground \texttt{position/5} atoms ($2752\,N^{2}$) \\
   \midrule
-  1 &  32 &  8 & 86 &   2\,752 &   22\,016 \\
-  2 &  64 & 16 & 86 &   5\,504 &   88\,064 \\
-  3 &  96 & 24 & 86 &   8\,256 & 198\,144 \\
-  4 & 128 & 32 & 86 &  11\,008 & 352\,256 \\
-  7 & 224 & 56 & 86 &  19\,264 & 1\,078\,784 \\
+  1 &  32 &  8 &     2\,752 \\
+  2 &  64 & 16 &    11\,008 \\
+  3 &  96 & 24 &    24\,768 \\
+  4 & 128 & 32 &    44\,032 \\
+  7 & 224 & 56 &   134\,848 \\
   \bottomrule
 \end{tabular}
 \end{table}
